@@ -12,7 +12,11 @@ function App() {
   const addValue = () => {
     if (counter < 25) {
       console.log("value added", counter);
-      setCounter(counter + 1);
+      setCounter(prevCounter => prevCounter + 1);
+      setCounter(prevCounter => prevCounter + 1);
+      setCounter(prevCounter => prevCounter + 1);
+      setCounter(prevCounter => prevCounter + 1);
+      
     } else {
       console.log("Counter has reached 25, cannot add further");
     }

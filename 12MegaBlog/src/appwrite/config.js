@@ -1,21 +1,20 @@
 import conf from "../../conf/conf.js";
-import { Client, ID, Databases, Query } from "appwrite";
+import { Client, ID, Databases, Query, Storage } from "appwrite"; // Added Storage
 
-export class Service{
+export class Service {
     client = new Client();
     databases;
     bucket;
-    constructor(){
-       this.client
-       .setEndpoint(conf.appwriteUrl)
-       .setProject(conf.appwriteptojectId);
-       this.databases = new Databases(this.client);
-       this.bucket = new Storage(this.client)
 
+    constructor() {
+        this.client
+            .setEndpoint(conf.appwriteUrl)
+            .setProject(conf.appwriteProjectId);
+        this.databases = new Databases(this.client);
+        this.bucket = new Storage(this.client); // Fixed undefined bucket
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId}){
-      
+    async createPost({ title, slug, content, featuredImage, status, userId }) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -28,122 +27,105 @@ export class Service{
                     status,
                     userId,
                 }
-            )
-            
+            );
         } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
-            
+            console.log("Appwrite service :: createPost :: error", error);
         }
     }
 
-    async UpdatePost( slug,{title, content, featuredImage, status}){
+    async updatePost(slug, { title, content, featuredImage, status }) {
         try {
             return await this.databases.updateDocument(
-                conf.appwriteBucketId,
+                conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
                 {
                     title,
                     content,
                     featuredImage,
-                    status
+                    status,
                 }
-            )
+            );
         } catch (error) {
-
-            console.log("Appwrite serive :: createPost :: error", error);
-            
+            console.log("Appwrite service :: updatePost :: error", error);
         }
     }
 
-    async deletePost(slug){
+    async deletePost(slug) {
         try {
-            await this.deleteDocument(
-                conf.appwriteDtabaseId,
+            await this.databases.deleteDocument(
+                conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug
-            )
+            );
             return true;
         } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
-             return false
-            
+            console.log("Appwrite service :: deletePost :: error", error);
+            return false;
         }
     }
 
-    async getPost(slug){
+    async getPost(slug) {
         try {
-              return await this.databases.getDocument(
-                conf.appwriteDtabaseId,
+            return await this.databases.getDocument(
+                conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug
-            )
-          }  catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
-             return false
-            
-        }
-    }
-
-    async getPosts(queries = [Query.equal("status", "active")]){
-        try {
-            return await this.databases.listDocument(
-                conf.appwriteDtabaseId,
-                conf.appwriteCollectionId,
-                queries,
-
-            )
+            );
         } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
-            return false
+            console.log("Appwrite service :: getPost :: error", error);
+            return false;
         }
     }
 
-    async uploadFile(file){
-      try {
-        return await this.bucket.createFile(  
-            conf.appwriteBucketId,
-            ID.unique(),
-            file
-        )
-      } catch (error) {
+    async getPosts(queries = [Query.equal("status", "active")]) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                queries
+            );
+        } catch (error) {
+            console.log("Appwrite service :: getPosts :: error", error);
+            return false;
+        }
+    }
 
-        console.log("Appwrite serive :: uploadFile :: error", error);
-        return false
-        
-      }
-        
-       }
-        async deleteFile(fileId){
-           try {
+    // File Upload Services
+
+    async uploadFile(file) {
+        try {
+            return await this.bucket.createFile(
+                conf.appwriteBucketId,
+                ID.unique(),
+                file
+            );
+        } catch (error) {
+            console.log("Appwrite service :: uploadFile :: error", error);
+            return false;
+        }
+    }
+
+    async deleteFile(fileId) {
+        try {
             await this.bucket.deleteFile(
-                await this.bucket.deleteFile(
-                   conf.appwriteBucketId,
-                   fileId
-                )
-            )
-            return true
-
-           } catch (error) {
-            console.log("Appwrite serive :: deleteFile :: error", error);
-            return false
-            
-           }
-
+                conf.appwriteBucketId,
+                fileId
+            );
+            return true;
+        } catch (error) {
+            console.log("Appwrite service :: deleteFile :: error", error);
+            return false;
         }
-
-    getFIlePreview(fileId){
-       return this.bucket.getFIlePreview(
-        conf.appwriteBucketId,
-        fileId
-       )
     }
 
+    getFilePreview(fileId) {
+        return this.bucket.getFilePreview(
+            conf.appwriteBucketId,
+            fileId
+        );
+    }
 }
 
-
-
-
-
-const service = new Service()
-export default service
+const service = new Service();
+export default service;

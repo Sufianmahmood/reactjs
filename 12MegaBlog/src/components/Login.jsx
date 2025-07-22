@@ -4,7 +4,7 @@ import { login as authLogin } from '../store/authSlice'
 import {Button, Input, Logo} from './index'
 import { useDispatch } from 'react-redux'
 import authService from '../appwrite/auth'
-import {set, useForm} from "react-hook-form"
+import {useForm} from "react-hook-form"
 
 
 function Login() {
@@ -18,7 +18,7 @@ function Login() {
        try {
         const session = await authService.login(data)
         if (session) {
-          const user = await authService.getCurrentUser()
+          const userData = await authService.getCurrentUser()
           if (userData)  dispatch(authLogin(userData));
           navigate("/");
           
@@ -59,11 +59,23 @@ function Login() {
                   validate: {
                         matchPatern: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
                         "Email address must be a valid address",
-                    }
+                    }                                        
                 })}
                 />
+                <Input 
+                label="Password"
+                placeholder="Enter your password"
+                type="password"
+                {...register("password", {
+                  required: true,
+                })}
+                />
+                <Button
+                type="submit"
+                className="w-full"
+                >Sign In </Button>
               </div>
-              </form> 
+              </form>  
        </div>
        </div> 
   )

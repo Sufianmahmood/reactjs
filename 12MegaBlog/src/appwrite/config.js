@@ -14,19 +14,19 @@ export class Service{
             this.databases = new Databases(this.client);
             this.bucket = new Storage(this.client);
     } 
-   async createPost({ Title, Slug, Content, FeaturedImage, Status, UserId }) {
+   async createPost({ title, slug, content, featuredImage, status, userId }) {
          try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
-                Slug,
+                slug,
                 {
-                    Title,
-                    Slug,
-                    Content,
-                    FeaturedImage,
-                    Status,
-                    UserId
+                    title,
+                    slug,
+                    content,
+                    featuredImage,
+                    status,
+                    userId
                 }
                 
             )
@@ -38,17 +38,17 @@ export class Service{
 
    }
 
-   async updatePost(Slug, { Title, Content, FeaturedImage, Status,}) {
+   async updatePost(slug, { title, content, featuredImage, status,}) {
      try {
         return await this.databases.updateDocument(
             conf.appwriteDatabaseId,
             conf.appwriteCollectionId,
-               Slug,
+               slug,
                {
-                    Title,
-                    Content,
-                    FeaturedImage,
-                    Status
+                    title,
+                    content,
+                    featuredImage,
+                    status
                }
             
             
@@ -59,12 +59,12 @@ export class Service{
      }  
    }
    
-   async deletePost(Slug) {
+   async deletePost(slug) {
      try {
          await this.databases.deleteDocument(
             conf.appwriteDatabaseId,
             conf.appwriteCollectionId,
-            Slug
+            slug
         );
         return true;
      } 
@@ -74,12 +74,12 @@ export class Service{
      }
    }
 
-   async getPost(Slug){
+   async getPost(slug){
       try {
         return await this.databases.getDocument(
             conf.appwriteDatabaseId,
             conf.appwriteCollectionId,
-            Slug
+            slug
         );
       }
       catch (error) {

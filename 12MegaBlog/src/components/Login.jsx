@@ -1,89 +1,70 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { login as authLogin } from '../store/authSlice';
-import { Button, Input, Logo } from './index';
-import { useDispatch } from 'react-redux';
-import authService from '../appwrite/auth';
 import { useForm } from 'react-hook-form';
+import authService from '../appwrite/auth';
+import { useDispatch } from 'react-redux';
+import { login } from '../store/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [error, setError] = useState('');
   const { register, handleSubmit } = useForm();
+  const [error, setError] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const login = async (data) => {
+  const loginUser = async (data) => {
     setError('');
     try {
       const session = await authService.login(data);
       if (session) {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(authLogin(userData));
+        const user = await authService.getCurrentUser();
+        if (user) {
+          dispatch(login({ userData: user }));
           navigate('/');
         }
       }
-    } catch (error) {
-      console.error('Login Error:', error);
-      setError(error.message || 'Something went wrong');
+    } catch (err) {
+      setError('Invalid email or password');
+      console.error('Login error:', err);
     }
   };
 
   return (
-    <div className='flex items-center justify-center w-full'>
-      <div className='mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10'>
-        <div className='mb-2 flex justify-center'>
-          <span className='inline-block w-full max-w-[100px]'>
-            <Logo width='100%' />
-          </span>
+    <div className="min-h-[80vh] flex items-center justify-center bg-gray-100 px-4">
+      <form
+        onSubmit={handleSubmit(loginUser)}
+        className="bg-white shadow-md rounded-lg p-8 w-full max-w-md"
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+
+        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Email</label>
+          <input
+            type="email"
+            {...register('email', { required: true })}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="you@example.com"
+          />
         </div>
 
-        <h2 className='text-center text-2xl font-bold leading-tight'>
-          Sign in to your account
-        </h2>
-        <p className='mt-2 text-center text-base text-black/60'>
-          Don&apos;t have an account?&nbsp;
-          <Link
-            to='/signup'
-            className='font-medium text-primary transition-all duration-200 hover:underline'
-          >
-            Sign Up
-          </Link>
-        </p>
+        <div className="mb-6">
+          <label className="block text-sm font-medium mb-1">Password</label>
+          <input
+            type="password"
+            {...register('password', { required: true })}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="••••••••"
+          />
+        </div>
 
-        {error && <p className='text-red-500 text-center mt-2'>{error}</p>}
-
-        <form onSubmit={handleSubmit(login)} className='mt-8'>
-          <div className='space-y-5'>
-            <Input
-              label='Email'
-              placeholder='Enter your email'
-              type='email'
-              {...register('email', {
-                required: true,
-                validate: {
-                  matchPattern: (value) =>
-                    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                    'Email address must be a valid address',
-                },
-              })}
-            />
-
-            <Input
-              label='Password'
-              placeholder='Enter your password'
-              type='password'
-              {...register('password', {
-                required: true,
-              })}
-            />
-
-            <Button type='submit' className='w-full'>
-              Sign In
-            </Button>
-          </div>
-        </form>
-      </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          Login
+        </button>
+      </form>
     </div>
   );
 }

@@ -7,8 +7,8 @@ export class AuthService {
 
   constructor() {
     this.client = new Client()
-      .setEndpoint(conf.appwriteUrl) // e.g., https://cloud.appwrite.io/v1
-      .setProject(conf.appwriteProjectId); // your project ID
+      .setEndpoint(conf.appwriteUrl)
+      .setProject(conf.appwriteProjectId);
 
     this.account = new Account(this.client);
   }
@@ -24,23 +24,22 @@ export class AuthService {
 
       if (userAccount) {
         return this.login({ email, password });
-      } else {
-        return userAccount;
       }
+      return userAccount;
     } catch (error) {
       console.error("AuthService :: createAccount :: error", error);
       throw error;
     }
   }
-async login({ email, password }) {
-  try {
-    return await this.account.createEmailPasswordSession(email, password);
-  } catch (error) {
-    console.error("AuthService :: login :: error", error);
-    throw error;
-  }
-}
 
+  async login({ email, password }) {
+    try {
+      return await this.account.createEmailPasswordSession(email, password);
+    } catch (error) {
+      console.error("AuthService :: login :: error", error);
+      throw error;
+    }
+  }
 
   async getCurrentUser() {
     try {
@@ -54,6 +53,7 @@ async login({ email, password }) {
   async logout() {
     try {
       await this.account.deleteSessions();
+      console.log("AuthService :: logout :: success");
     } catch (error) {
       console.error("AuthService :: logout :: error", error);
       throw error;

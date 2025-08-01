@@ -1,11 +1,14 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-function Logo({width= '100px'}) {
+
+function Logo({ width = '100px' }) {
   return (
-    <div>
-      Logo
-    </div>
-  )
+    <Link to="/" className="block" style={{ width }}>
+      <h1 className="text-2xl font-bold text-blue-600">SufianBlog</h1>
+    </Link>
+  );
 }
 
-export default Logo
+
+export default Logo;

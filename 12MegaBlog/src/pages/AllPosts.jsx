@@ -6,10 +6,15 @@ function AllPosts() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    appwriteService.getPosts([]).then((response) => {
+    appwriteService.getPosts().then((response) => {
       if (response && response.documents) {
         setPosts(response.documents);
+      } else {
+        setPosts([]);
       }
+    }).catch((error) => {
+      console.error("Error fetching posts:", error);
+      setPosts([]);
     });
   }, []);
 

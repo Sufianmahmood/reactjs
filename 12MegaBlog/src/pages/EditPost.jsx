@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, PostForm } from '../components';
-import appwriteService from "../appwrite/config";
+import appwriteService from '../appwrite/config';
 import { useNavigate, useParams } from 'react-router-dom';
 
 function EditPost() {
-    const [post, setPost] = useState(null); // ✅ Renamed to singular 'setPost'
+    const [post, setPost] = useState(null);
     const { slug } = useParams();
     const navigate = useNavigate();
 
-    // ✅ useEffect instead of useNavigate for side effects
     useEffect(() => {
         if (slug) {
-            appwriteService.getPost(slug).then((fetchedPost) => {
-                if (fetchedPost) {
-                    setPost(fetchedPost);
+            appwriteService.getPost(slug).then((post) => {
+                if (post) {
+                    setPost(post);
                 } else {
                     navigate('/');
                 }
@@ -24,15 +23,12 @@ function EditPost() {
     }, [slug, navigate]);
 
     return post ? (
-        <div className='py-8'>
+        <div className="py-8">
             <Container>
-                <h1 className="text-2xl font-bold mb-4 text-center">Edit Post</h1>
                 <PostForm post={post} />
             </Container>
         </div>
-    ) : (
-        <div className='py-8 text-center text-lg font-semibold'>Loading post...</div>
-    );
+    ) : null;
 }
 
 export default EditPost;

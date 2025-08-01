@@ -15,29 +15,27 @@ export class Service {
         this.bucket = new Storage(this.client);
     }
 
- 
- // Create a new blog post
-async createPost({ title, slug, content, feauturedImage, status, userId }) {
-    try {
-        return await this.databases.createDocument(
-            conf.appwriteDatabaseId,
-            conf.appwriteCollectionId,
-            ID.unique(), // ✅ fix here
-            {
-                title,
-                slug,
-                content,
-                feauturedImage,
-                status,
-                userId,
-            }
-        );
-    } catch (error) {
-        console.error("Appwrite service :: createPost :: error", error);
-        return null;
+    // Create a new blog post
+    async createPost({ title, slug, content, feauturedImage, status, userId }) {
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                ID.unique(),
+                {
+                    title,
+                    slug,
+                    content,
+                    feauturedImage,
+                    status,
+                    userId,
+                }
+            );
+        } catch (error) {
+            console.error("Appwrite service :: createPost :: error", error);
+            return null;
+        }
     }
-}
-
 
     // Update an existing blog post
     async updatePost(slug, { title, content, feauturedImage, status }) {
@@ -127,9 +125,9 @@ async createPost({ title, slug, content, feauturedImage, status, userId }) {
         }
     }
 
-    // Get file preview URL
+    // Get file preview URL - changed to use download instead (Free plan limitation)
     getFilePreview(fileId) {
-        return this.bucket.getFilePreview(conf.appwriteBucketId, fileId);
+        return this.bucket.getFileDownload(conf.appwriteBucketId, fileId);
     }
 
     // Get file download URL

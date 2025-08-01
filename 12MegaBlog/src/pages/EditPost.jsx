@@ -10,25 +10,27 @@ function EditPost() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (slug) {
-      appwriteService.getPost(slug)
-        .then((post) => {
-          if (post) {
-            setPost(post);
-          } else {
-            navigate('/');
-          }
-        })
-        .catch((err) => {
-          console.error("EditPost.jsx :: getPost error", err);
-          navigate('/');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
+    if (!slug) {
       navigate('/');
+      return;
     }
+
+    appwriteService
+      .getPost(slug)
+      .then((fetchedPost) => {
+        if (fetchedPost) {
+          setPost(fetchedPost);
+        } else {
+          navigate('/');
+        }
+      })
+      .catch((err) => {
+        console.error("EditPost.jsx :: getPost error", err);
+        navigate('/');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [slug, navigate]);
 
   if (loading) {

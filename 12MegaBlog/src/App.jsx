@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 
-import authService from "./appwrite/auth"; // make sure this path is correct
+import authService from "./appwrite/auth";
 import { login, logout } from "./store/authSlice";
 
 import {
@@ -28,10 +28,14 @@ function App() {
     authService.getCurrentUser()
       .then((user) => {
         if (user) {
-          dispatch(login({ userData: user })); // ✅ fixed line
+          dispatch(login({ userData: user }));
         } else {
           dispatch(logout());
         }
+      })
+      .catch((error) => {
+        console.error("App.jsx :: getCurrentUser error:", error);
+        dispatch(logout());
       });
   }, [dispatch]);
 
